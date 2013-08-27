@@ -18,11 +18,8 @@ class Chess
 
   def get_move
     print "\n"
-    puts "Position: "
-    start_pos = parse_position(gets.chomp)
-    puts "Move to"
-    end_pos = parse_position(gets.chomp)
-    move = [start_pos, end_pos]
+    puts "Enter Initial and End Position"
+    parse_position(gets.chomp.downcase)
   end
 
   def make_move(move)
@@ -33,6 +30,7 @@ class Chess
   end
 
   def parse_position(string)
+    # Possible parsing error
     strings = [string[/\D\d/], string[/\D\d$/]]
     move = []
     strings.each do |string|
@@ -40,9 +38,9 @@ class Chess
       string.split("").each do |let_or_num|
         pair << (let_or_num[/\d/] ? let_or_num.to_i - 1 : let_or_num.ord - 97)
       end
-      move << pair
+      move << pair.reverse
     end
-
+    p move
     move
   end
 
