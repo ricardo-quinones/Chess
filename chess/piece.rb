@@ -21,7 +21,6 @@ class Piece
   end
 
   def legal?(move, match, turn)
-    puts "my color #{self.color} their color #{match[move[0], move[1]].color.to_sym}"
     move_set.include?(move) && turn == self.color && paths_clear?(move, match) && self.color != match[move[0], move[1]].color.to_sym
     # return false unless move_set.include?(move)
     # return false unless turn == self.color
