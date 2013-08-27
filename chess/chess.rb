@@ -1,5 +1,6 @@
 require_relative 'board'
 require_relative 'piece'
+# require_relative 'move_sets_module'
 
 class Chess
 
@@ -16,6 +17,7 @@ class Chess
   end
 
   def get_move
+    print "\n"
     puts "Position: "
     start_pos = parse_position(gets.chomp)
     puts "Move to"
