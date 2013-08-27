@@ -33,7 +33,17 @@ class Chess
   end
 
   def parse_position(string)
-    string.split(" ").map { |coord| coord.to_i }
+    strings = [string[/\D\d/], string[/\D\d$/]]
+    move = []
+    strings.each do |string|
+      pair = []
+      string.split("").each do |let_or_num|
+        pair << (let_or_num[/\d/] ? let_or_num.to_i - 1 : let_or_num.ord - 97)
+      end
+      move << pair
+    end
+
+    move
   end
 
 end
