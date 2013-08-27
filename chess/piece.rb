@@ -1,4 +1,9 @@
+require_relative 'move_set_module'
+
 class Piece
+
+  include MoveSets
+
   attr_accessor :color, :position, :symbol
 
   def initialize
@@ -17,7 +22,14 @@ class Piece
     board[coords[0], coords[1]] = self
   end
 
+  def legal?(move)
+    move_set.include?(move)
+  end
+
 end
+
+
+
 
 class King < Piece
 
@@ -25,6 +37,15 @@ class King < Piece
     super
     @symbol = "K"
     @position = [0, 4]
+    @move_set = king_move_set(@position)
   end
+
+end
+
+class Queen < Piece
+
+end
+
+class Pawn < Piece
 
 end
