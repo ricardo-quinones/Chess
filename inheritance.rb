@@ -19,6 +19,8 @@ end
 
 class Manager < Employee
 
+  attr_accessor :employees
+
   def initialize(salary, title)
     super
     @employees = []
@@ -27,30 +29,44 @@ class Manager < Employee
   def add_employee(*employee)
     employee.each do |emp|
       emp.manager = self
-      @employees << employee
+      @employees << emp
     end
+  end
+
+  def sub_salaries
+    total_salaries = 0
+    self.employees.each do |emp|
+      total_salaries += emp.salary
+      p emp.class
+      total_salaries += emp.sub_salaries if emp.class == Manager
+    end
+    total_salaries
   end
 
   def bonus(multiplier)
     sub_employee_sal = 0
-    @employees.each do |employee|
-      sub_employee_sal += employee.salary
+    @employees.each do |emp|
+      sub_employee_sal += emp.salary
+
     end
     sub_employee_sal * multiplier
   end
 end
 
-seth = Employee.new(80000, "Dev slave")
+seth = Manager.new(80000, "Dev slave")
 ricky = Employee.new(85000, "Dev underling")
 sid = Manager.new(100000, "Dev superstar")
-sid.add_employee(seth, sid)
+seth.add_employee(ricky)
+sid.add_employee(seth)
 
-p seth.salary
-seth.bonus(0.01)
-sid.employees.each do |emp|
-  p emp
-end
+# p seth.salary
+# seth.bonus(0.01)
+# sid.employees.each do |emp|
+#   p emp
+# end
 # p sid
-# p seth.bonus(0.10)
-# p sid.bonus(0.10)
-# p ricky.bonus(0.10)
+# p seth.bonus(0.01)
+# p ricky.bonus(0.01)
+# p sid.bonus(0.01)
+
+p sid.sub_salaries
