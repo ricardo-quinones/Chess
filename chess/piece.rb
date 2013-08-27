@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require_relative 'move_sets_module'
 
 class Piece
@@ -13,23 +14,15 @@ class Piece
     @symbol = nil
   end
 
-  def set_piece(row, col, board)
-    board[row, col] = self
+  def move_piece(coords, match, turn)
+    match[@position[0], @position[1]] = nil
+    @position = coords
+    match[coords[0], coords[1]] = self
   end
 
-  def move_piece(coords, board)
-    if legal?(coords)
-      p move_set.include?(coords)
-      board[@position[0], @position[1]] = nil
-      @position = coords
-      board[coords[0], coords[1]] = self
-    else
-      puts "That's not a legal move"
-    end
-  end
-
-  def legal?(move)
-    move_set.include?(move)
+  def legal?(move, match, turn)
+    move_set.include?(move) && turn == self.color
+    #NEEDS TO CHECK OTHER PIECES
   end
 
 
@@ -41,7 +34,7 @@ class King < Piece
 
   def initialize(color)
     super
-    @symbol = "K"
+    @symbol = "♚"
   end
 
   def move_set
@@ -56,7 +49,7 @@ class Queen < Piece
 
   def initialize(color)
     super
-    @symbol = "Q"
+    @symbol = "♛"
   end
 
   def move_set
@@ -70,7 +63,7 @@ class Pawn < Piece
 
   def initialize(color)
     super
-    @symbol = "i"
+    @symbol = "♙"
   end
 
   def move_set
@@ -84,7 +77,7 @@ class Rook < Piece
 
   def initialize(color)
     super
-    @symbol = "R"
+    @symbol = "♖"
   end
 
   def move_set
@@ -98,7 +91,7 @@ class Bishop < Piece
 
   def initialize(color)
     super
-    @symbol = "B"
+    @symbol = "♗"
   end
 
   def move_set
@@ -112,7 +105,7 @@ class Knight < Piece
 
   def initialize(color)
     super
-    @symbol = "k"
+    @symbol = "♘"
   end
 
   def move_set

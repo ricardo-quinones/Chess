@@ -85,7 +85,7 @@ module MoveSets
     row = start_pos[0]
     col = start_pos[1]
 
-    [[row, col - 1], [row, col + 1], [row, col - 2], [row, col + 2],
+    [[row - 1, col], [row + 1, col], [row - 2, col], [row + 2, col],
     [row + 1, col + 1], [row + 1, col - 1], [row - 1, col + 1],
     [row - 1, col - 1]].select { |move| on_board?(move) }
   end

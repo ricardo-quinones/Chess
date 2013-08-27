@@ -1,15 +1,19 @@
 require_relative 'board'
 require_relative 'piece'
-# require_relative 'move_sets_module'
 
 class Chess
 
+  attr_accessor :turn
+
+
   def initialize
     @match = Board.new
+    @turn = :red
   end
 
   def play
     while true
+      puts @turn == :red ? "\n\nRed, it's your move." : "\n\nBlue, it's your move."
       @match.print_board
       move = get_move
       make_move(move)
@@ -25,8 +29,17 @@ class Chess
   def make_move(move)
     start_x, start_y = move[0][0], move[0][1]
     end_x, end_y = move[1][0], move[1][1]
+
     piece = @match.board[start_x][start_y]
-    piece.move_piece(move[1], @match)
+
+    if piece.legal?(move[1], @match, @turn)
+      piece.move_piece(move[1], @match, @turn)
+
+      @turn = (@turn == :red ? :blue : :red)
+    else
+
+      puts "That's not a legal move"
+    end
   end
 
   def parse_position(string)
@@ -40,7 +53,7 @@ class Chess
       end
       move << pair.reverse
     end
-    p move
+
     move
   end
 
