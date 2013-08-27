@@ -10,7 +10,6 @@ class Board
 
   def set_board
     @board[0][4] = King.new
-
   end
 
   def []=(x, y, value)

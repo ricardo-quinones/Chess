@@ -11,8 +11,10 @@ class Piece
     board[row, col] = self
   end
 
-  def move_piece
-
+  def move_piece(coords, board)
+    board[@position[0], @position[1]] = nil
+    @position = coords
+    board[coords[0], coords[1]] = self
   end
 
 end

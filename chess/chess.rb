@@ -27,7 +27,7 @@ class Chess
     start_x, start_y = move[0][0], move[0][1]
     end_x, end_y = move[1][0], move[1][1]
     piece = @match.board[start_x][start_y]
-    piece.move_piece([end_x, end_y])
+    piece.move_piece(move[1], @match)
   end
 
   def parse_position(string)
