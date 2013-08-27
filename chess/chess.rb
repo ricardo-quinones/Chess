@@ -23,7 +23,7 @@ class Chess
   def get_move
     print "\n"
     puts "Enter Initial and End Position"
-    parse_position(gets.chomp.downcase)
+    parse_position(gets.chomp.strip.downcase)
   end
 
   def make_move(move)
@@ -44,6 +44,7 @@ class Chess
 
   def parse_position(string)
     # Possible parsing error
+
     strings = [string[/\D\d/], string[/\D\d$/]]
     move = []
     strings.each do |string|
@@ -51,7 +52,7 @@ class Chess
       string.split("").each do |let_or_num|
         pair << (let_or_num[/\d/] ? let_or_num.to_i - 1 : let_or_num.ord - 97)
       end
-      move << pair.reverse
+      move << pair.reverse #ducktape; reversed pair because of rendering
     end
 
     move
