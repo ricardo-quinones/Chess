@@ -24,20 +24,23 @@ class Piece
     row = move[0]
     col = move[1]
 
+
+
     if turn != self.color
       puts "Sorry, that piece is not yours to move."
       return false
     elsif !match[row, col].nil? && self.color == match[row, col].color.to_sym
       puts "Whoa! You don't want to capture your own piece!"
       return false
-    elsif !move_set.include?(move)
+    elsif self.class != Pawn && !move_set.include?(move)
       puts "That piece cannot move in that way."
       return false
+    else
+      return false unless paths_clear?(move, match)
     end
 
     true
   end
-
 
   def paths_clear?(move, match)
     paths = check_paths(move)
@@ -74,7 +77,6 @@ class Piece
       end
     end
 
-    p spaces_between
     spaces_between
   end
 
@@ -96,6 +98,29 @@ class Piece
 
     spaces_between
   end
+
+  def diagonal_path(move)
+    row1 = self.position[0]
+    col1 = self.position[1]
+
+    row2 = move[0]
+    col2 = move[1]
+
+    spaces_between = []
+
+    row_array = (row1 < row2 ? (row1 + 1...row2) : (row2 + 1...row1)).to_a
+    col_array = (col1 < col2 ? (col1 + 1...col2) : (col2 + 1...col1)).to_a
+
+    if (row1 > row2 && col1 < col2) || (row1 < row2 && col1 > col2)
+      col_array.reverse!
+    end
+
+    row_array.count.times do |index|
+      spaces_between << [row_array[index], col_array[index]]
+    end
+
+    spaces_between
+  end
 end
 
 class King < Piece
@@ -111,9 +136,6 @@ class King < Piece
     king_move_set(@position)
   end
 
-  def legal?(move, match, turn)
-    super
-  end
 end
 
 class Queen < Piece
@@ -126,16 +148,13 @@ class Queen < Piece
   end
 
   def check_paths(move)
-    super + horizontal_path(move) + vertical_path(move)#add diagonal paths
+    super + horizontal_path(move) + vertical_path(move) + diagonal_path(move)
   end
 
   def move_set
     queen_move_set(@position)
   end
 
-  def legal?(move, match, turn)
-    super
-  end
 end
 
 class Pawn < Piece
@@ -147,11 +166,13 @@ class Pawn < Piece
     @symbol = "♙"
   end
 
-  def move_set
-    pawn_move_set(@position, @color)
+  def move_set(match)
+    pawn_move_set(@position, @color, match)
   end
 
   def legal?(move, match, turn)
+    return false unless move_set(match).include?(move)
+
     super
   end
 end
@@ -166,20 +187,12 @@ class Rook < Piece
   end
 
   def move_set
+    p "i'm getting run"
     rook_move_set(@position)
   end
 
   def check_paths(move)
     super + horizontal_path(move) + vertical_path(move)
-  end
-
-  def legal?(move, match, turn)
-    if super
-      unless paths_clear?(move, match)
-        return false
-      end
-    end
-
   end
 end
 
@@ -193,15 +206,12 @@ class Bishop < Piece
   end
 
   def check_paths(move)
-    super #add diagonals
+    super + diagonal_path(move)
   end
 
   def move_set
+    p bishop_move_set(@position)
     bishop_move_set(@position)
-  end
-
-  def legal?(move, match, turn)
-    super
   end
 end
 
@@ -216,9 +226,5 @@ class Knight < Piece
 
   def move_set
     knight_move_set(@position)
-  end
-
-  def legal?(move, match, turn)
-    super
   end
 end

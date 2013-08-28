@@ -32,7 +32,7 @@ class Chess
 
     piece = @match.board[start_x][start_y]
 
-    puts piece.legal?(move[1], @match, @turn)
+    puts "piece is position #{piece.position}"
     if piece.nil?
       puts "That space is empty. Try making another move"
     elsif piece.legal?(move[1], @match, @turn)
