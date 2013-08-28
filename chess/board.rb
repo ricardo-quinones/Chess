@@ -7,7 +7,7 @@ class Board
   def initialize
     @board = make_board
     set_board
-    print_board
+    # print_board; don't need to do this
   end
 
   def set_board
@@ -84,11 +84,11 @@ class Board
     ("A".."H").each { |letter| print letter.center(3, " ") }
     print "\n"
     @board.each_with_index do |row, index|
-      print "#{index + 1}"
+      print "#{8 - index}"
       row.each do |piece|
         print piece ? " #{piece.symbol.colorize(piece.color)} " : " _ "
       end
-      print "#{index + 1}\n"
+      print "#{8 - index}\n"
     end
     print " "
     ("A".."H").each { |letter| print letter.center(3, " ") }

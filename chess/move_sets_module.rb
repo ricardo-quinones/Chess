@@ -81,16 +81,16 @@ module MoveSets
     move_set
   end
 
-  def pawn_move_set(start_pos)
+  def pawn_move_set(start_pos, color)
     row = start_pos[0]
     col = start_pos[1]
 
-    [[row - 1, col], [row + 1, col], [row - 2, col], [row + 2, col],
-    [row + 1, col + 1], [row + 1, col - 1], [row - 1, col + 1],
-    [row - 1, col - 1]].select { |move| on_board?(move) }
+    i = (color == :blue ? 1 : -1)
+
+    [[row + i, col], [row + i * 2, col], [row + i, col - 1], [row + i, col + 1]].select { |move| on_board?(move) }
   end
 end
 
 
 
-# p pawn_move_set([5,5])
+# p pawn_move_set([1,0], :blue)
