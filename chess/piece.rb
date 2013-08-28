@@ -57,8 +57,9 @@ class Piece
     opponent_pieces = temp_board.flatten.compact.select { |piece| piece.color != self.color }
 
     other_pieces = opponent_pieces.any? do |piece|
-
-      piece.move_set.include?(king.position) unless piece.class == Pawn
+      unless piece.class == Pawn
+        piece.move_set.include?(king.position) && piece.paths_clear?(king.position, temp_board)
+      end
     end
     pawn_pieces = opponent_pieces.any? do |piece|
       piece.move_set(temp_board).include?(king.position) if piece.class == Pawn
@@ -165,7 +166,10 @@ class King < Piece
     opponent_pieces = board.flatten.compact.select { |piece| piece.color != self.color }
 
     other_pieces = opponent_pieces.any? do |piece|
-      piece.move_set.include?(self.position) unless piece.class == Pawn
+      unless piece.class == Pawn
+        p paths_clear?(self.position, board)
+        piece.move_set.include?(self.position) && piece.paths_clear?(self.position, board)
+      end
     end
     pawn_pieces = opponent_pieces.any? do |piece|
       piece.move_set(board).include?(self.position) if piece.class == Pawn
