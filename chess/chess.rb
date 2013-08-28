@@ -16,8 +16,16 @@ class Chess
       puts @turn == :red ? "\n\nRed, it's your move.".colorize(@turn) : "\n\nBlue, it's your move.".colorize(@turn)
       @match.print_board
       move = get_move
-      make_move(move)
+      make_move(move) # check? - not moving yourself in check? Else, puts "NO"
+      puts "You're in check, #{@turn.to_s.capitalize}!!! Check yourself before you wreck yourself" if check?
     end
+  end
+
+  def check?
+    king = @match.board.flatten.compact.select do |piece|
+      piece.class == King && piece.color == @turn
+    end[0]
+    king.check?(@match.board)
   end
 
   def get_move
@@ -58,7 +66,7 @@ class Chess
       end
       move << pair.reverse #ducktape; reversed pair because of rendering
     end
-    p move
+
     move
   end
 

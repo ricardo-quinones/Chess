@@ -24,8 +24,6 @@ class Piece
     row = move[0]
     col = move[1]
 
-
-
     if turn != self.color
       puts "Sorry, that piece is not yours to move."
       return false
@@ -35,20 +33,47 @@ class Piece
     elsif self.class != Pawn && !move_set.include?(move)
       puts "That piece cannot move in that way."
       return false
+    elsif !paths_clear?(move, match.board)
+      return false
     else
-      return false unless paths_clear?(move, match)
+      return false if self_check?(move, match, turn)
     end
 
     true
   end
 
-  def paths_clear?(move, match)
+  def self_check?(move, match, turn)
+    temp_board = match.board.deep_dup
+
+    temp_board[@position[0]][@position[1]] = nil
+    temp_board[move[0]][move[1]] = self.dup
+
+    king = temp_board.flatten.compact.select do |piece|
+      piece.class == King && piece.color == turn
+    end[0]
+
+    king.position = [move[0], move[1]] if self.class == King
+
+    opponent_pieces = temp_board.flatten.compact.select { |piece| piece.color != self.color }
+
+    other_pieces = opponent_pieces.any? do |piece|
+
+      piece.move_set.include?(king.position) unless piece.class == Pawn
+    end
+    pawn_pieces = opponent_pieces.any? do |piece|
+      piece.move_set(temp_board).include?(king.position) if piece.class == Pawn
+    end
+    puts "You can't put your king in check!" if other_pieces || pawn_pieces
+    other_pieces || pawn_pieces
+  end
+
+  def paths_clear?(move, board)
     paths = check_paths(move)
 
     return true if paths.empty?
 
     paths.each do |row, col|
-      unless match[row, col].nil?
+      unless board[row][col].nil?
         puts "There are pieces in the way."
         return false
       end
@@ -136,6 +161,18 @@ class King < Piece
     king_move_set(@position)
   end
 
+  def check?(board)
+    opponent_pieces = board.flatten.compact.select { |piece| piece.color != self.color }
+
+    other_pieces = opponent_pieces.any? do |piece|
+      piece.move_set.include?(self.position) unless piece.class == Pawn
+    end
+    pawn_pieces = opponent_pieces.any? do |piece|
+      piece.move_set(board).include?(self.position) if piece.class == Pawn
+    end
+    puts "king is in check" if other_pieces || pawn_pieces
+    other_pieces || pawn_pieces
+  end
 end
 
 class Queen < Piece
@@ -166,12 +203,12 @@ class Pawn < Piece
     @symbol = "♙"
   end
 
-  def move_set(match)
-    pawn_move_set(@position, @color, match)
+  def move_set(board)
+    pawn_move_set(@position, @color, board)
   end
 
   def legal?(move, match, turn)
-    return false unless move_set(match).include?(move)
+    return false unless move_set(match.board).include?(move)
 
     super
   end
@@ -187,7 +224,6 @@ class Rook < Piece
   end
 
   def move_set
-    p "i'm getting run"
     rook_move_set(@position)
   end
 
@@ -210,7 +246,6 @@ class Bishop < Piece
   end
 
   def move_set
-    p bishop_move_set(@position)
     bishop_move_set(@position)
   end
 end
@@ -227,4 +262,27 @@ class Knight < Piece
   def move_set
     knight_move_set(@position)
   end
+end
+
+def print_board(dup_board)
+  print "\n DUPLICATE BOARD"
+  ("A".."H").each { |letter| print letter.center(3, " ") }
+  print "\n"
+  dup_board.each_with_index do |row, index|
+    print "#{8 - index}"
+    row.each do |piece|
+      print piece ? " #{piece.symbol.colorize(piece.color)} " : " _ "
+    end
+    print "#{8 - index}\n"
+  end
+  print " "
+  ("A".."H").each { |letter| print letter.center(3, " ") }
+end
+
+class Array
+
+  def deep_dup
+    self.map { |elem| elem.is_a?(Array) ? elem.deep_dup : elem }
+  end
+
 end
