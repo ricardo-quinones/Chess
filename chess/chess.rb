@@ -1,10 +1,10 @@
 require_relative 'board'
 require_relative 'piece'
+require 'colorize'
 
 class Chess
 
   attr_accessor :turn
-
 
   def initialize
     @match = Board.new
@@ -12,13 +12,28 @@ class Chess
   end
 
   def play
-    while true
+    loop do
       puts @turn == :red ? "\n\nRed, it's your move.".colorize(@turn) : "\n\nBlue, it's your move.".colorize(@turn)
       @match.print_board
       move = get_move
-      make_move(move) # check? - not moving yourself in check? Else, puts "NO"
-      puts "You're in check, #{@turn.to_s.capitalize}!!! Check yourself before you wreck yourself" if check?
+      make_move(move)
+      if check?
+        puts "\n\nYou're in check, #{@turn.capitalize}!!!".colorize(@turn)
+
+        break if checkmate?
+      end
     end
+
+    @match.print_board
+    winner = (@turn == :red ? :blue : :red)
+    puts "\nCongratulations, #{winner.capitalize} Player. You won!!!".colorize(winner)
+  end
+
+  def checkmate?
+    king = @match.board.flatten.compact.select do |piece|
+      piece.class == King && piece.color == @turn
+    end[0]
+    king.checkmate?(@match, @turn)
   end
 
   def check?
@@ -40,23 +55,20 @@ class Chess
 
     piece = @match.board[start_x][start_y]
 
-    puts "piece is position #{piece.position}"
     if piece.nil?
       puts "That space is empty. Try making another move"
-    elsif piece.legal?(move[1], @match, @turn)
+    elsif piece.legal?(move[1], @match, @turn) && !piece.self_check?(move[1], @match, @turn)
       piece.move_piece(move[1], @match)
 
       @turn = (@turn == :red ? :blue : :red)
     else
 
-      puts "Try making another move."
+      puts "Invalid move. Try making another move."
     end
-
   end
 
   def parse_position(string)
     # Possible parsing error
-
     strings = [string[/\D\d/], string[/\D\d$/]]
     move = []
     strings.each do |string|
@@ -69,7 +81,6 @@ class Chess
 
     move
   end
-
 end
 
 game = Chess.new
